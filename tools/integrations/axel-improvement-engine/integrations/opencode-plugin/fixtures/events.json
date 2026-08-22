@@ -1,0 +1,7 @@
+[
+  {"type":"session.created","properties":{"info":{"id":"ses-fixture-01","projectID":"project-fixture"}}},
+  {"type":"message.updated","properties":{"info":{"id":"msg-01","sessionID":"ses-fixture-01","role":"user"}}},
+  {"type":"message.part.updated","properties":{"part":{"id":"part-01","sessionID":"ses-fixture-01","messageID":"msg-01","type":"text","text":"Run tests with token=super-secret-token"}}},
+  {"type":"file.edited","properties":{"file":"src/main.py"}},
+  {"type":"session.idle","properties":{"sessionID":"ses-fixture-01"}}
+]

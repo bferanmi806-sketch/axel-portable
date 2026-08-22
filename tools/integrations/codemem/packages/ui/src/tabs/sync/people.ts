@@ -1,0 +1,365 @@
+/* People card — people, devices, sharing review, legacy device claims. */
+
+import * as api from "../../lib/api";
+import { clearFieldError, friendlyError, markFieldError } from "../../lib/form";
+import { handlePrimaryActionKeyboard } from "../../lib/keyboard";
+import { showGlobalNotice } from "../../lib/notice";
+import { state } from "../../lib/state";
+import { renderProjectShareOperations } from "./components/project-share-operations";
+import { renderSyncActorsList } from "./components/sync-actors";
+import { renderSyncEmptyState } from "./components/sync-diagnostics";
+import type { SyncActionFeedback } from "./components/sync-inline-feedback";
+import { renderLegacyClaimsSlice } from "./components/sync-legacy-claims";
+import { canManageSpacesInTeams, renderSyncPeersList } from "./components/sync-peers";
+import { hideSkeleton, isPeerScopeReviewPending, shouldClearStalePeersFeedback } from "./helpers";
+import { openSyncConfirmDialog } from "./sync-dialogs";
+import {
+	deriveVisiblePeopleActors,
+	summarizeSyncRunResult,
+	type VisiblePeopleResult,
+} from "./view-model";
+
+/* ── loadSyncData callback (set by index module) ─────────── */
+
+let _loadSyncData: () => Promise<void> = async () => {};
+let legacyDeviceValue = "";
+
+function setPeopleCreateControlsDisabled(disabled: boolean) {
+	const createButton = document.getElementById("syncActorCreateButton") as HTMLButtonElement | null;
+	const createInput = document.getElementById("syncActorCreateInput") as HTMLInputElement | null;
+	if (createButton) createButton.disabled = disabled;
+	if (createInput) createInput.disabled = disabled;
+}
+
+export function setLoadSyncData(fn: () => Promise<void>) {
+	_loadSyncData = fn;
+}
+
+/* ── Actors renderer ─────────────────────────────────────── */
+
+export function renderSyncActors() {
+	const actorList = document.getElementById("syncActorsList");
+	const actorMeta = document.getElementById("syncActorsMeta");
+	if (!actorList) return;
+	hideSkeleton("syncActorsSkeleton");
+	setPeopleCreateControlsDisabled(false);
+
+	const actorVisibility: VisiblePeopleResult = deriveVisiblePeopleActors({
+		actors: state.lastSyncActors,
+		peers: state.lastSyncPeers,
+		duplicatePeople: state.lastSyncViewModel?.duplicatePeople,
+	});
+	const actors = actorVisibility.visibleActors;
+	if (actorMeta) {
+		actorMeta.textContent = actors.length
+			? "Manage people here, then assign devices below."
+			: "No named people yet. Create a person here, then assign devices below so sync ownership is easier to review.";
+		if (actorVisibility.hiddenLocalDuplicateCount > 0) {
+			actorMeta.textContent += ` ${actorVisibility.hiddenLocalDuplicateCount} unresolved duplicate ${actorVisibility.hiddenLocalDuplicateCount === 1 ? "entry is" : "entries are"} hidden here until reviewed in Needs attention.`;
+		}
+	}
+
+	renderSyncActorsList(actorList, {
+		actors,
+		hiddenLocalDuplicateCount: actorVisibility.hiddenLocalDuplicateCount,
+		onRename: async (actorId, nextName) => {
+			await api.renameActor(actorId, nextName);
+			await _loadSyncData();
+		},
+		onMerge: async (primaryActorId, secondaryActorId) => {
+			try {
+				await api.mergeActor(primaryActorId, secondaryActorId);
+				showGlobalNotice("People combined. Assigned devices moved to the selected person.");
+				await _loadSyncData();
+			} catch (error) {
+				showGlobalNotice(friendlyError(error, "Failed to combine people."), "warning");
+				throw error;
+			}
+		},
+		onDeactivate: async (actorId) => {
+			try {
+				await api.deactivateActor(actorId);
+				showGlobalNotice("Person removed. Assigned devices have been unassigned.");
+				await _loadSyncData();
+			} catch (error) {
+				showGlobalNotice(friendlyError(error, "Failed to remove person."), "warning");
+				throw error;
+			}
+		},
+	});
+}
+
+export function renderSyncActorsUnavailable() {
+	const actorList = document.getElementById("syncActorsList");
+	const actorMeta = document.getElementById("syncActorsMeta");
+	setPeopleCreateControlsDisabled(true);
+	if (actorMeta) {
+		actorMeta.textContent =
+			"People controls are temporarily unavailable. Refresh this page to retry. Device status and sync health are still available below while this recovers.";
+	}
+	if (actorList) {
+		renderSyncEmptyState(actorList, {
+			title: "People unavailable right now.",
+			detail:
+				"Refresh this page to retry. When the people endpoint responds again, named people will reload here.",
+		});
+	}
+}
+
+export function renderProjectSharingOperations() {
+	const mount = document.getElementById("syncProjectShareOperations");
+	if (!mount) return;
+	renderProjectShareOperations(mount, {
+		operations: state.lastShareOperations,
+		onAdvance: (operationId) => api.advanceShareOperation(operationId),
+		onLoadOperation: (operationId) => api.loadShareOperation(operationId),
+		onReload: _loadSyncData,
+	});
+	const meta = document.getElementById("syncProjectShareOperationsMeta");
+	if (meta) {
+		meta.textContent = state.shareOperationsLoadError
+			? "Project sharing status could not be refreshed. Existing device diagnostics remain available below."
+			: state.lastShareOperations.length > 0
+				? "Project access is grouped by Person. Devices appear after invitation acceptance."
+				: "Share a project from Projects to invite a teammate.";
+	}
+}
+
+/* ── Devices renderer ────────────────────────────────────── */
+
+export function renderSyncPeers() {
+	const syncPeers = document.getElementById("syncPeers");
+	if (!syncPeers) return;
+	hideSkeleton("syncPeersSkeleton");
+	const peers = state.lastSyncPeers;
+	const peersArray = Array.isArray(peers) ? peers : [];
+	// "Removed peer X" feedback survives in module state until the page
+	// reloads. Clear it once the same peer reappears in the loaded list
+	// (e.g. because the user re-paired the device they just removed) so
+	// the banner does not contradict the live device row beneath it.
+	if (shouldClearStalePeersFeedback(state.syncPeersSectionFeedback, peersArray)) {
+		state.syncPeersSectionFeedback = null;
+	}
+	renderSyncPeersList(syncPeers, {
+		peers: peersArray,
+		onRename: async (peerId, nextName) => {
+			try {
+				await api.renamePeer(peerId, nextName);
+				await _loadSyncData();
+				return { message: "Device name saved.", tone: "success" } satisfies SyncActionFeedback;
+			} catch (error) {
+				return {
+					message: friendlyError(error, "Failed to save device name."),
+					tone: "warning",
+				} satisfies SyncActionFeedback;
+			}
+		},
+		onSync: async (peer, address) => {
+			try {
+				const peerId = String(peer?.peer_device_id || "");
+				const result = await api.triggerSync({ address, peerDeviceId: peerId || undefined });
+				const summary = summarizeSyncRunResult(result);
+				let feedback: SyncActionFeedback | null;
+				if (!summary.ok) {
+					feedback = { message: summary.message, tone: "warning" };
+				} else if (peerId && isPeerScopeReviewPending(peerId)) {
+					const displayName = peer?.name || (peerId ? peerId.slice(0, 8) : "unknown");
+					const reviewGuidance = canManageSpacesInTeams()
+						? "Review Space access and advanced rules in Teams if this device needs tighter sharing."
+						: "A coordinator or manager can review Space access and advanced rules in Teams if this device needs tighter sharing.";
+					feedback = {
+						message: `Triggered sync for ${displayName}. ${reviewGuidance}`,
+						tone: "warning",
+					};
+				} else {
+					feedback = { message: summary.message, tone: "success" };
+				}
+				try {
+					await _loadSyncData();
+				} catch {
+					feedback = {
+						message:
+							"Sync started, but this view has not refreshed yet. Refresh the page or use Sync now again before retrying.",
+						tone: "warning",
+					};
+				}
+				return feedback;
+			} catch (error) {
+				return {
+					message: friendlyError(error, "Failed to trigger sync."),
+					tone: "warning",
+				} satisfies SyncActionFeedback;
+			}
+		},
+		onRemove: async (peerId, label) => {
+			try {
+				await api.deletePeer(peerId);
+				const feedback = {
+					message: `Removed peer ${label}.`,
+					tone: "success" as const,
+				} satisfies SyncActionFeedback;
+				state.syncPeerFeedbackById.delete(peerId);
+				// Tag the section feedback with the removed peer id so a
+				// subsequent re-pair of the same device can detect and clear
+				// the stale "Removed peer X" banner on the next render.
+				state.syncPeersSectionFeedback = { ...feedback, relatedPeerDeviceId: peerId };
+				await _loadSyncData();
+				return feedback;
+			} catch (error) {
+				return {
+					message: friendlyError(
+						error,
+						"Failed to remove peer. The local peer entry is still here.",
+					),
+					tone: "warning",
+				} satisfies SyncActionFeedback;
+			}
+		},
+		onAssignActor: async (peerId, actorId) => {
+			try {
+				await api.assignPeerActor(peerId, actorId);
+				await _loadSyncData();
+				return {
+					message: actorId ? "Device assignment updated." : "Device assignment cleared.",
+					tone: "success",
+				} satisfies SyncActionFeedback;
+			} catch (error) {
+				return {
+					message: friendlyError(
+						error,
+						"Failed to update device assignment. The current assignment is unchanged.",
+					),
+					tone: "warning",
+				} satisfies SyncActionFeedback;
+			}
+		},
+	});
+}
+
+export function renderSyncPeopleUnavailable() {
+	const actorList = document.getElementById("syncActorsList");
+	const actorMeta = document.getElementById("syncActorsMeta");
+	const syncPeers = document.getElementById("syncPeers");
+	setPeopleCreateControlsDisabled(true);
+	if (actorMeta) {
+		actorMeta.textContent =
+			"People and device details are unavailable right now. Refresh this page to retry once local sync status is reachable again.";
+	}
+	if (actorList) {
+		renderSyncEmptyState(actorList, {
+			title: "People unavailable right now.",
+			detail:
+				"Refresh this page to retry. Named people will reload here once the local sync status endpoint responds again.",
+		});
+	}
+	if (syncPeers) {
+		renderSyncEmptyState(syncPeers, {
+			title: "Devices unavailable right now.",
+			detail:
+				"Refresh this page to retry. When sync is reachable again, paired devices will reload here so you can rename, assign, or re-pair them.",
+		});
+	}
+}
+
+/* ── Legacy device claims renderer ───────────────────────── */
+
+export function renderLegacyDeviceClaims() {
+	const panel = document.getElementById("syncLegacyClaims");
+	const mount = document.getElementById("syncLegacyDeviceSelectMount") as HTMLElement | null;
+	const meta = document.getElementById("syncLegacyClaimsMeta");
+	if (!panel || !mount || !meta) return;
+
+	const devices = Array.isArray(state.lastSyncLegacyDevices) ? state.lastSyncLegacyDevices : [];
+	renderLegacyClaimsSlice({
+		devices,
+		meta,
+		mount,
+		onValueChange: (value) => {
+			if (value === legacyDeviceValue) return;
+			legacyDeviceValue = value;
+			renderLegacyDeviceClaims();
+		},
+		panel,
+		value: legacyDeviceValue,
+	});
+}
+
+/* ── Event wiring ────────────────────────────────────────── */
+
+export function initPeopleEvents(loadSyncData: () => Promise<void>) {
+	const syncActorCreateButton = document.getElementById(
+		"syncActorCreateButton",
+	) as HTMLButtonElement | null;
+	const syncActorCreateInput = document.getElementById(
+		"syncActorCreateInput",
+	) as HTMLInputElement | null;
+	const syncLegacyClaimButton = document.getElementById(
+		"syncLegacyClaimButton",
+	) as HTMLButtonElement | null;
+
+	// Enter inside the create-person input triggers Create person so the
+	// user does not need to chase the button after typing the name.
+	syncActorCreateInput?.addEventListener("keydown", (event) => {
+		handlePrimaryActionKeyboard(event, {
+			onSubmit: () => syncActorCreateButton?.click(),
+			disabled: !syncActorCreateButton || syncActorCreateButton.disabled,
+		});
+	});
+
+	syncActorCreateButton?.addEventListener("click", async () => {
+		if (!syncActorCreateButton || !syncActorCreateInput) return;
+		const displayName = String(syncActorCreateInput.value || "").trim();
+		if (!displayName) {
+			markFieldError(syncActorCreateInput, "Enter a name for the person.");
+			return;
+		}
+		clearFieldError(syncActorCreateInput);
+		syncActorCreateButton.disabled = true;
+		syncActorCreateInput.disabled = true;
+		syncActorCreateButton.textContent = "Creating\u2026";
+		try {
+			await api.createActor(displayName);
+			showGlobalNotice("Person created.");
+			syncActorCreateInput.value = "";
+			await loadSyncData();
+		} catch (error) {
+			showGlobalNotice(friendlyError(error, "Failed to create person."), "warning");
+			syncActorCreateButton.textContent = "Retry";
+			syncActorCreateButton.disabled = false;
+			syncActorCreateInput.disabled = false;
+			return;
+		}
+		syncActorCreateButton.textContent = "Create person";
+		syncActorCreateButton.disabled = false;
+		syncActorCreateInput.disabled = false;
+	});
+
+	syncLegacyClaimButton?.addEventListener("click", async () => {
+		const originDeviceId = String(legacyDeviceValue || "").trim();
+		if (!originDeviceId || !syncLegacyClaimButton) return;
+		const confirmed = await openSyncConfirmDialog({
+			title: `Attach history from ${originDeviceId}?`,
+			description:
+				"This updates legacy provenance so the older device history is attached to you on this device.",
+			confirmLabel: "Attach history",
+			cancelLabel: "Cancel",
+			tone: "danger",
+		});
+		if (!confirmed) return;
+		syncLegacyClaimButton.disabled = true;
+		const originalText = syncLegacyClaimButton.textContent || "Attach device history";
+		syncLegacyClaimButton.textContent = "Attaching\u2026";
+		try {
+			await api.claimLegacyDeviceIdentity(originDeviceId);
+			showGlobalNotice("Old device history attached to you.");
+			await loadSyncData();
+		} catch (error) {
+			showGlobalNotice(friendlyError(error, "Failed to attach old device history."), "warning");
+			syncLegacyClaimButton.textContent = "Retry";
+			syncLegacyClaimButton.disabled = false;
+			return;
+		}
+		syncLegacyClaimButton.textContent = originalText;
+		syncLegacyClaimButton.disabled = false;
+	});
+}

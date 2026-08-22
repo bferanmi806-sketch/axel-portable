@@ -1,0 +1,31 @@
+# Skill creator eval/review generated artifacts
+*-workspace/
+**/*-workspace/
+
+# Review and benchmark outputs
+**/benchmark.json
+**/benchmark.md
+**/feedback.json
+**/review.html
+**/eval_review*.html
+
+# Optimizer and eval logs
+**/improve_iter_*.json
+**/optimization-results*.json
+**/trigger-eval*.json
+
+# Local temp/export artifacts
+tmp/
+*.tmp
+
+# Package manager installs
+plugin/node_modules/
+
+# Marketing skills (project-level only)
+.opencode/
+.agents/
+
+# Marketing and promotional materials (not part of the project)
+promo/
+.github/DISCUSSION_TEMPLATE/
+.DS_Store

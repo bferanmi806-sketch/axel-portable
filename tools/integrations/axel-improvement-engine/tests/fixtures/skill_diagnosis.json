@@ -1,0 +1,15 @@
+{
+  "id": "diagnosis-004",
+  "class": "skill",
+  "target": "reviewer",
+  "confidence": 0.9,
+  "target_confidence": 0.9,
+  "status": "eligible",
+  "promotable": true,
+  "recurrence_count": 2,
+  "trajectory_ids": ["trajectory-01", "trajectory-02"],
+  "evidence_ids": ["evidence-01", "evidence-02"],
+  "rationale": "Repeated reviews omitted a required safety check.",
+  "proposed_content": "---\nname: reviewer\ndescription: Review code changes\n---\n\n# Reviewer\n\nAlways check the safety boundary.\n",
+  "evaluation_rules": [{"id": "safety-fixture", "type": "fixture"}]
+}

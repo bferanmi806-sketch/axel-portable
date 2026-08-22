@@ -1,0 +1,34 @@
+[
+  {
+    "query": "Create a compose.yaml for a Node API, Postgres database, and Redis cache for local development.",
+    "should_trigger": true
+  },
+  {
+    "query": "My docker-compose.yml starts Postgres but the app says ECONNREFUSED to localhost:5432. Help me fix the compose networking.",
+    "should_trigger": true
+  },
+  {
+    "query": "Convert this docker run command into a Docker Compose service with a named volume and port mapping.",
+    "should_trigger": true
+  },
+  {
+    "query": "Add a healthcheck and depends_on condition so my web service waits for the database to be ready in compose.yaml.",
+    "should_trigger": true
+  },
+  {
+    "query": "Review my compose file for unnecessary ports, missing env vars, and volume mistakes before I share it with the team.",
+    "should_trigger": true
+  },
+  {
+    "query": "Write a Kubernetes Deployment and Service for this container image.",
+    "should_trigger": false
+  },
+  {
+    "query": "Explain how Docker image layers and build cache work at a high level.",
+    "should_trigger": false
+  },
+  {
+    "query": "Fix this GitHub Actions workflow that builds and pushes a container image.",
+    "should_trigger": false
+  }
+]

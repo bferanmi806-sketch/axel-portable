@@ -1,0 +1,14 @@
+version = 1
+id = "codex-dreamer-nightly"
+kind = "cron"
+name = "Codex Dreamer Nightly"
+prompt = "Run the existing Codex Dreamer workflow/helper in the baymax-backend repo.\n\nUse repo root C:\\Baymax\\baymax-backend. Read raw Axel conversation logs from logs/conversation/. Prioritize today's logs, but use older logs for context if useful. Inspect relevant repo docs/code/project context when useful.\n\nGenerate or update the daily Dreamer Markdown file at docs/dreamer/YYYY-MM-DD-dream-review.md. The Dream Markdown should summarize what happened today, important project direction, suggested decisions, risks, architecture/code opportunities, proposed Graphiti updates, proposed MemPalace updates, and what needs user review in Codex.\n\nGenerate or update the JSON sync plan at data/dreamer/sync/YYYY-MM-DD-dream-sync.json. The JSON sync plan must remain pending by default with approval_required=true, approved_by_codex_app=false, and sync_status=\"pending\".\n\nApproval and safety: Codex may prepare Dream docs and sync plans automatically. Do not run real Graphiti or MemPalace writes unless the sync plan has been approved through the Codex app approval flow. Do not use Axel as an approval UI. Do not use or expand the old ReviewStore Dream pipeline. Do not create Project Understanding ReviewItems for this Codex-first Dreamer path. Keep Project Understanding read-only/compiler-only. Axel should only be able to show a reminder that Dreamer findings are ready in Codex. Do not git add, commit, or push automatically.\n\nAfter each run, report: Dream doc path, JSON sync plan path, whether Dreamer findings are waiting for Codex review, whether anything was synced, and any warnings/errors."
+status = "PAUSED"
+rrule = "FREQ=WEEKLY;BYDAY=MO,TU,WE,TH,FR,SA,SU;BYHOUR=23;BYMINUTE=0;BYSECOND=0"
+model = "gpt-5.4"
+reasoning_effort = "medium"
+execution_environment = "local"
+target = { type = "project", project_id = "local-194646c0434539aa7c3ddcc267522c30" }
+cwds = ["C:\\Baymax\\baymax-backend"]
+created_at = 1782899810343
+updated_at = 1783537098969

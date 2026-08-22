@@ -1,0 +1,31 @@
+{
+  "candidate_digest": "35169aff905a9b53e8f8046187eef37acfe23ac9a37229c98722d41e544a2ec0",
+  "candidate_id": "candidate-diagnosis-004",
+  "compound_provenance": null,
+  "confidence": 0.9,
+  "diagnosis_promotable": true,
+  "diagnosis_recurrence_count": 2,
+  "diagnosis_signature": null,
+  "diagnosis_status": "eligible",
+  "diagnosis_target_confidence": 0.9,
+  "diff_digest": "5f282bbae96ff52223dbf08842124192aac11ccf492dc221f34ba4e14b3557e7",
+  "evaluation_rules": [
+    {"id": "safety-fixture", "type": "fixture"}
+  ],
+  "evidence_ids": ["evidence-01", "evidence-02"],
+  "event_ids": [],
+  "merge_candidate_for": [],
+  "new_skill_name": null,
+  "new_skill": false,
+  "parent_digest": "5cf28463d7e1c473f8ff4911a00e383a76ebf586f884901399b0d2052fcaa4ff",
+  "provider_assessment": null,
+  "provenance_digest": "5c40cc274c05af36a6ef2ca7901c95f4b0a34d7db6d3515349e0d26421c8772b",
+  "proposed_diff": null,
+  "rationale": "Repeated reviews omitted a required safety check.",
+  "relation": "targeted_revision",
+  "schema_version": 1,
+  "status": "proposed",
+  "target": "reviewer/SKILL.md",
+  "target_class": "skill",
+  "trajectory_ids": ["trajectory-01", "trajectory-02"]
+}

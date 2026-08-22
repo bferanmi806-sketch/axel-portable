@@ -1,0 +1,27 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "local-memory-build",
+  "instructions": ["AGENTS.md"],
+  "permission": {
+    "read": "allow",
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "edit": "ask",
+    "bash": {
+      "git status*": "allow",
+      "git diff*": "allow",
+      "npm run typecheck": "allow",
+      "npm test": "allow",
+      "npm run verify": "allow",
+      "npm audit --omit=dev": "allow",
+      "*": "ask"
+    },
+    "task": "ask",
+    "external_directory": "ask",
+    "skill": "allow",
+    "question": "allow",
+    "todowrite": "allow",
+    "doom_loop": "ask"
+  }
+}

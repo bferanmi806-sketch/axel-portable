@@ -1,0 +1,44 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+
+# Virtual envs
+venv/
+env/
+.venv/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Skill runtime outputs — don't commit test artifacts
+*.mp4
+*.mkv
+*.webm
+*.srt
+*.vtt
+*.m4a
+*.mp3
+manifest.json
+_work/
+frames/
+out/
+output/
+watch-*/
+
+# Secrets — NEVER commit
+.env
+.env.*
+*.key
+*.pem
+secrets/
+.config/

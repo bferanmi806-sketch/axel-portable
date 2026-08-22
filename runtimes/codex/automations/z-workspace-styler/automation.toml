@@ -1,0 +1,10 @@
+version = 1
+id = "z-workspace-styler"
+kind = "heartbeat"
+name = "Z Workspace Styler"
+prompt = "Process pending Z Workspace creative transform tasks for baymax-backend. Use docs/project_understanding/Z_WORKSPACE_CODEX_AUTOMATION_V1.md and data/project_understanding/z_workspace/z_workspace_automation_prompt.md as the contract. On each run: prepare missing Z handoffs as a fallback, inspect only pending z_image_transform_process codex_handoff.json tasks, generate one styled image per pending task from the original image plus style preset/prompt/notes, write result.json and styled_image.png or styled_image.jpg into the matching outbox, write result.json-only with structured errors on failure, then run the existing Z ingestion helper so sessions become result_ready or failed. Report concise counts for found, transformed, failed, and ingested tasks. Never create ReviewItems, truth, provider sync, Graphiti, MemPalace, snapshots, or Project Understanding evidence records."
+status = "PAUSED"
+rrule = "FREQ=MINUTELY;INTERVAL=1"
+target_thread_id = "019f2cb5-1c0f-7690-94d0-decc8660d0e7"
+created_at = 1783161578432
+updated_at = 1783161985897

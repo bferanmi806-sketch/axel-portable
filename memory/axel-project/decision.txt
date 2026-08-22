@@ -1,0 +1,226 @@
+# Axel Architecture Decisions
+
+## 1. Conversation Mode V1
+
+**Status:** Implemented
+
+**Decision:** Conversation Mode V1 is frozen and retained only as a rollback path.
+
+**Reason:** The older architecture required repeated context patches and was less reliable.
+
+---
+
+## 2. Conversation Mode V2
+
+**Status:** Implemented
+
+**Decision:** Conversation Mode V2 uses the OpenAI Agents SDK as its conversation and tool runtime.
+
+**Reason:** It provides stable sessions, natural tool selection, and governed tool execution.
+
+---
+
+## 3. Short-Term Conversation History
+
+**Status:** Implemented
+
+**Decision:** `SQLiteSession` is the only model-facing source of short-term conversation history.
+
+**Reason:** Multiple history stores would create duplication and inconsistent context.
+
+---
+
+## 4. RuntimeStore
+
+**Status:** Implemented
+
+**Decision:** `RuntimeStore` remains audit-only.
+
+**Reason:** Audit records must remain separate from conversation history and long-term memory.
+
+---
+
+## 5. Long-Term Memory
+
+**Status:** Implemented
+
+**Decision:** Approved long-term memory remains separate from short-term conversation history and project state.
+
+**Reason:** Durable preferences, decisions, goals, constraints, reflections, and patterns must survive across conversations without polluting normal chat history.
+
+**Consequence:** Only approved active memories should guide current responses. Superseded memories remain historical.
+
+---
+
+## 6. Current Instructions Override Memory
+
+**Status:** Implemented
+
+**Decision:** A current explicit user instruction takes priority over a stored preference.
+
+**Reason:** Memory should support the user, not restrict them.
+
+---
+
+## 7. Project-State Tool
+
+**Status:** Implemented
+
+**Decision:** Project capabilities are exposed to the model through one governed tool: `project_state`.
+
+**Reason:** Exposing many Plane-specific or workspace-specific tools would increase complexity and weaken tool selection.
+
+---
+
+## 8. Plane
+
+**Status:** Implemented as read-only
+
+**Decision:** Plane is the structured source for projects, work items, states, modules, cycles, Pages, priorities, deadlines, and formal progress.
+
+**Reason:** Plane provides the structured project timeline Axel needs.
+
+---
+
+## 9. Enoch Projects Workspace
+
+**Status:** Implemented
+
+**Decision:** The Plane workspace is named **Enoch Projects** and is not limited to Axel development.
+
+**Reason:** Axel’s project awareness should later include courses, engineering work, applications, research, and other meaningful commitments.
+
+---
+
+## 10. Project Workspace Model
+
+**Status:** Implemented
+
+**Decision:** A Plane project may have:
+
+- one primary project-knowledge workspace;
+- zero or more evidence workspaces.
+
+**Reason:** Compact living project knowledge and raw supporting evidence serve different purposes.
+
+---
+
+## 11. AXEL Workspace Association
+
+**Status:** Implemented
+
+**Decision:**
+
+- Primary workspace: `axel_project`
+- Evidence workspace: `axel_backend`
+
+**Reason:** Axel is larger than its backend repository.
+
+**Consequence:** `axel_project` stores living Markdown knowledge about the whole project, while `axel_backend` provides implementation evidence.
+
+---
+
+## 12. Backend Repository
+
+**Status:** Implemented
+
+**Decision:** `C:\Baymax\baymax-backend` is implementation evidence, not the complete Axel project.
+
+**Reason:** The wider Axel project also includes product direction, architecture decisions, research, workflows, interfaces, and future components.
+
+---
+
+## 13. Project Understanding
+
+**Status:** Implemented
+
+**Decision:** Project Understanding retrieves a small, relevant evidence set from managed workspaces instead of loading whole repositories.
+
+**Reason:** Bounded evidence retrieval reduces token use and improves answer quality.
+
+---
+
+## 14. Codex Worker
+
+**Status:** Existing capability
+
+**Decision:** Codex Worker is the deeper analysis lane when normal bounded retrieval is insufficient.
+
+**Reason:** Broad reconstruction and complex evidence synthesis may require a separate analysis job.
+
+**Consequence:** Codex Worker should not be launched automatically for ordinary project questions.
+
+---
+
+## 15. Plane-Only Questions
+
+**Status:** Implemented
+
+**Decision:** Simple Plane questions should remain Plane-only.
+
+**Reason:** Listing projects, work items, or modules does not require workspace inspection.
+
+---
+
+## 16. Plane Writes
+
+**Status:** Deferred
+
+**Decision:** Plane remains technically read-only during Phase 2.
+
+**Reason:** Axel must prove reliable project understanding before it is allowed to change project records.
+
+---
+
+## 17. Continuous GitHub and Email Ingestion
+
+**Status:** Rejected
+
+**Decision:** Axel will not continuously ingest every GitHub or email event.
+
+**Reason:** Axel should remain intentional and conversation-first rather than becoming an always-watching automation platform.
+
+---
+
+## 18. Kimai
+
+**Status:** Planned
+
+**Decision:** Kimai will be the canonical source for actual time spent and worklogs.
+
+**Reason:** Kimai already provides reliable timers, activities, timesheets, and reports.
+
+---
+
+## 19. Google Calendar
+
+**Status:** Planned
+
+**Decision:** Google Calendar will represent appointments, availability, commitments, and planned focus sessions.
+
+**Reason:** Planned time is different from actual completed time.
+
+---
+
+## 20. Time Ownership
+
+**Status:** Planned
+
+**Decision:**
+
+- Plane due date = when work must be completed.
+- Google Calendar block = when work is planned.
+- Kimai entry = time actually spent.
+
+**Reason:** Keeping these separate prevents conflicting or misleading timelines.
+
+---
+
+## 21. Timer Interface
+
+**Status:** Planned
+
+**Decision:** Axel’s active timer interface should remain minimal:
+
+```text
+● <context> · <elapsed time>   [ Stop ]

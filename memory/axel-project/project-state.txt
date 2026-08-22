@@ -1,0 +1,42 @@
+# Axel Project State
+
+## Purpose
+
+Axel is a conversation-first, project-aware, context-capturing assistant.
+
+Its purpose is to help Enoch understand, organise, and manage ongoing projects, courses, responsibilities, research, and personal goals through natural conversation.
+
+Axel should remain calm and focused. It should not become a complicated dashboard, a replacement for ChatGPT or Codex, or a large autonomous agent.
+
+## Current Stage
+
+Axel has completed the foundation for reliable long-term memory and read-only project awareness.
+
+The current stage is validating the living project-workspace model before beginning the project-execution and time-tracking phase.
+
+## Current Architecture
+
+- Conversation Mode V2 uses the OpenAI Agents SDK.
+- `SQLiteSession` is the sole model-facing source of short-term conversation history.
+- `RuntimeStore` is audit-only.
+- Conversation Mode V1 is frozen and retained only as a rollback path.
+- Approved long-term memory supports persistent, restart-safe, cross-session recall.
+- Long-term memory can be reused contextually when answering relevant questions.
+- `project_state` is the single governed model-facing project capability.
+- Plane is the structured project-state and formal project-timeline source.
+- The Plane workspace is named **Enoch Projects**.
+- The Plane workspace slug is `axelblaze`.
+- The Plane AXEL project is associated with the primary workspace `axel_project`.
+- `axel_project` stores compact living knowledge about the whole Axel project.
+- `axel_backend` is a separate read-only evidence workspace containing implementation code and tests.
+- Project Understanding retrieves focused evidence from managed workspaces when required.
+- Codex Worker is reserved for evidence that is too broad or complex for normal bounded retrieval.
+
+## Current Project Workspace Model
+
+```text
+Plane project: AXEL
+├── Primary workspace: axel_project
+│   └── Living Markdown project knowledge
+└── Evidence workspace: axel_backend
+    └── Backend implementation code and tests

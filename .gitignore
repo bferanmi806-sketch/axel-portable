@@ -1,0 +1,56 @@
+# Secrets and local credentials
+.env
+.env.*
+!.env.example
+**/.env
+**/.env.*
+!**/.env.example
+**/auth.json
+**/credentials*
+**/token_cache.json
+**/token*.json
+**/*private-key*
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/*cookies*
+
+# Runtime databases, journals, caches, and logs
+*.db
+*.sqlite
+*.sqlite3
+*.sqlite-*
+*.db-*
+*.wal
+*.shm
+*.log
+**/cache/
+**/caches/
+**/node_modules/
+**/.venv/
+**/dist/
+**/build/
+**/__pycache__/
+**/*.pyc
+**/*.tsbuildinfo
+
+# Local package/runtime state
+.git/
+.codemem/
+.basic-memory/
+.paseo/
+.codex/
+restore-test/
+tmp/
+
+# Archives and editor/OS state
+*.zip
+*.7z
+*.tar
+*.gz
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/

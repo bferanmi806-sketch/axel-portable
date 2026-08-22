@@ -1,0 +1,127 @@
+import type { PackRenderOptions } from "@codemem/core";
+import { resolveProject } from "@codemem/core";
+import type { Command } from "commander";
+
+export type PackFilters = { project?: string; working_set_paths?: string[] };
+
+export type PackRequestOptions = {
+	limit: number;
+	budget: number | undefined;
+	filters: PackFilters;
+	renderOptions?: PackRenderOptions;
+};
+
+export class PackUsageError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "PackUsageError";
+	}
+}
+
+export function collectWorkingSetFile(value: string, previous: string[]): string[] {
+	return [...previous, value];
+}
+
+export function addPackRequestOptions(command: Command): Command {
+	return command
+		.option("-n, --limit <n>", "max items", "10")
+		.option("--budget <tokens>", "token budget")
+		.option("--token-budget <tokens>", "token budget")
+		.option(
+			"--working-set-file <path>",
+			"recently modified file path used as ranking hint",
+			collectWorkingSetFile,
+			[],
+		)
+		.option("--project <project>", "project identifier (defaults to git repo root)")
+		.option("--all-projects", "search across all projects")
+		.option("--compact", "render a scannable index with full detail only for top N items")
+		.option("--compact-detail <n>", "items to show in full detail in compact mode (default 3)")
+		.option(
+			"--compression-mode <mode>",
+			"near-related compression mode: off, compact, or ids (default: CODEMEM_PACK_COMPRESSION or compact)",
+		);
+}
+
+export function buildPackRequestOptions(
+	opts: {
+		limit?: string;
+		budget?: string;
+		tokenBudget?: string;
+		workingSetFile?: string[];
+		project?: string;
+		allProjects?: boolean;
+		compact?: boolean;
+		compactDetail?: string;
+		compressionMode?: string;
+	},
+	ctx: {
+		cwd?: string;
+		envProject?: string | null;
+		resolveProjectFn?: typeof resolveProject;
+	} = {},
+): PackRequestOptions {
+	const limit = parsePositiveInt(opts.limit ?? "10", "limit");
+	const budgetRaw = opts.tokenBudget ?? opts.budget;
+	const budget = budgetRaw ? parseNonNegativeInt(budgetRaw, "token budget") : undefined;
+	const filters: PackFilters = {};
+
+	if (!opts.allProjects) {
+		const defaultProject = ctx.envProject?.trim() || null;
+		const resolveProjectFn = ctx.resolveProjectFn ?? resolveProject;
+		const cwd = ctx.cwd ?? process.cwd();
+		const project = defaultProject || resolveProjectFn(cwd, opts.project ?? null);
+		if (project) {
+			filters.project = project;
+		}
+	}
+
+	if ((opts.workingSetFile?.length ?? 0) > 0) {
+		filters.working_set_paths = opts.workingSetFile;
+	}
+
+	let renderOptions: PackRenderOptions | undefined;
+	if (opts.compact || opts.compactDetail != null || opts.compressionMode != null) {
+		renderOptions = {};
+		if (opts.compact || opts.compactDetail != null) renderOptions.compact = true;
+		if (opts.compactDetail != null) {
+			renderOptions.compactDetailCount = parseNonNegativeInt(
+				opts.compactDetail,
+				"compact detail count",
+			);
+		}
+		if (opts.compressionMode != null) {
+			renderOptions.compressionMode = parseCompressionMode(opts.compressionMode);
+		}
+	}
+
+	return { limit, budget, filters, renderOptions };
+}
+
+function parseCompressionMode(value: string): "off" | "compact" | "ids" {
+	const normalized = value.trim().toLowerCase();
+	if (normalized === "off" || normalized === "compact" || normalized === "ids") return normalized;
+	throw new PackUsageError("compression mode must be one of: off, compact, ids");
+}
+
+function parsePositiveInt(value: string, label: string): number {
+	if (!/^\d+$/.test(value.trim())) {
+		throw new PackUsageError(`${label} must be a positive integer`);
+	}
+	const parsed = Number.parseInt(value, 10);
+	if (!Number.isFinite(parsed) || parsed < 1) {
+		throw new PackUsageError(`${label} must be a positive integer`);
+	}
+	return parsed;
+}
+
+function parseNonNegativeInt(value: string, label: string): number {
+	if (!/^\d+$/.test(value.trim())) {
+		throw new PackUsageError(`${label} must be a non-negative integer`);
+	}
+	const parsed = Number.parseInt(value, 10);
+	if (!Number.isFinite(parsed) || parsed < 0) {
+		throw new PackUsageError(`${label} must be a non-negative integer`);
+	}
+	return parsed;
+}

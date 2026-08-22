@@ -1,0 +1,64 @@
+{
+  "version": 1,
+  "daemon": {
+    "listen": "127.0.0.1:6767",
+    "mcp": {
+      "injectIntoAgents": true
+    },
+    "browserTools": {
+      "enabled": true
+    },
+    "autoArchiveAfterMerge": false,
+    "enableTerminalAgentHooks": false,
+    "appendSystemPrompt": "__READ_IDENTITY_AXEL_MD_AND_INJECT__",
+    "terminalProfiles": [
+      {
+        "id": "opencode",
+        "name": "OpenCode",
+        "command": "opencode",
+        "icon": "opencode"
+      },
+      {
+        "id": "codex",
+        "name": "Codex",
+        "command": "codex",
+        "icon": "codex"
+      },
+      {
+        "id": "claude",
+        "name": "Claude Code",
+        "command": "claude",
+        "icon": "claude"
+      }
+    ],
+    "cors": {
+      "allowedOrigins": [
+        "https://app.paseo.sh"
+      ]
+    },
+    "relay": {
+      "enabled": true
+    }
+  },
+  "app": {
+    "baseUrl": "https://app.paseo.sh"
+  },
+  "agents": {
+    "providers": {
+      "codex": {
+        "command": [
+          "codex"
+        ]
+      },
+      "hermes": {
+        "extends": "acp",
+        "label": "Hermes",
+        "description": "Nous Research self-improving AI agent",
+        "command": [
+          "hermes",
+          "acp"
+        ]
+      }
+    }
+  }
+}

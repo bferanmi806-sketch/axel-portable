@@ -1,0 +1,13 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "plugin": [
+    [
+      "file:///absolute/path/to/opencode-local-memory",
+      {
+        "capture": false,
+        "consolidation": false,
+        "injection": false
+      }
+    ]
+  ]
+}

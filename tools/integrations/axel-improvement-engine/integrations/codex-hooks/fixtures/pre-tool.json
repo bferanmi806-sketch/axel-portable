@@ -1,0 +1,1 @@
+{"session_id":"thr-fixture-01","transcript_path":null,"cwd":"C:\\work\\sample","hook_event_name":"PreToolUse","turn_id":"turn-01","tool_name":"Bash","tool_use_id":"tool-01","tool_input":{"command":"python -m unittest","api_key":"sk-test-secret-123456789"}}

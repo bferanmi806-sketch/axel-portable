@@ -1,0 +1,41 @@
+{
+  "skill_name": "goal-to-tickets",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Plan a production-ready predictive-maintenance platform for a small industrial operator. It should ingest equipment telemetry, detect likely failures, notify maintenance staff, and provide an audit trail. Research existing GitHub projects before proposing custom infrastructure, then produce the final local specification and all implementation tickets. Do not build it.",
+      "expected_output": "Creates a local reuse survey, evidence-backed final specification, and dependency-ordered vertical-slice tickets without implementing or publishing anything.",
+      "files": [],
+      "assertions": [
+        "The response performs or explicitly initiates a GitHub repository reuse scan before custom architecture.",
+        "The final deliverables are local Markdown specification and ticket artifacts.",
+        "The workflow stops before implementation or GitHub issue publication.",
+        "Tickets cover production concerns and declare blocking relationships."
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "We have an existing web application and want organisations to invite members by email with expiring links. Turn this into a plan and tickets, but keep the process proportionate because the feature is fairly clear.",
+      "expected_output": "Uses a lightweight scan and focused clarification, avoids unnecessary wayfinding, and produces a concise specification plus end-to-end tickets.",
+      "files": [],
+      "assertions": [
+        "The workflow calibrates its depth to a relatively clear feature.",
+        "Tickets are vertical user-visible slices rather than separate database, API, and UI phases.",
+        "Security and expiry behavior appear in the specification or relevant tickets.",
+        "No implementation work is performed."
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "I want to build some kind of open-source system that helps African energy businesses coordinate field maintenance, but I do not yet know whether this should be an asset-management product, a workflow layer, or an integration over an existing platform. Research what we could reuse and guide me from this vague goal to implementation tickets.",
+      "expected_output": "Recognises decision-changing uncertainty, uses focused grilling and research/wayfinding, compares reuse-led alternatives, and waits for sufficient shared understanding before final tickets.",
+      "files": [],
+      "assertions": [
+        "The workflow does not prematurely generate implementation tickets from the vague goal.",
+        "It asks one consequential decision question at a time with a recommendation.",
+        "It searches for existing GitHub solutions and evaluates reuse options.",
+        "It defines a readiness gate before specification and ticket generation."
+      ]
+    }
+  ]
+}
