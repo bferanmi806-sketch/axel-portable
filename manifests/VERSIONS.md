@@ -13,7 +13,7 @@ live CLI invocation.
 | OpenCode WSL Ubuntu | Not installed/on PATH | `wsl.exe -d Ubuntu -e opencode --version` failed with command not found |
 | Paseo | `0.3.1` | `Documents\paseo-opencode-runtime\package.json` |
 | Paseo source checkout | branch `experiment/opencode-cdesktop-runtime`, commit `cb9ae1cea971f135c2956302bbcadfe77d1b2e1f` | Git metadata |
-| Basic Memory | `0.22.1` | `basic-memory --version` |
+| Basic Memory | `0.23.0` | `basic-memory --version` |
 | CodeMem local source | `@codemem/core`, `@codemem/mcp`, `@codemem/opencode-plugin`, `codemem` `0.40.0-alpha.1` | package manifests |
 | CodeMem source base commit | `44724456ea4ef91771bd15b1811932988c687eaa` (`v0.40.0-alpha.1-10-g44724456`), dirty working tree | Git metadata |
 | Codex CLI | `codex-cli 0.145.0` | `codex --version` |

@@ -63,7 +63,8 @@ Copy-PortableTree "runtimes" "runtimes"
 
 $opencodeTemplate = Get-Content -Raw -Encoding UTF8 -LiteralPath (Join-Path $repoRoot "opencode\config\opencode.json.template")
 $opencodeRoot = $repoRoot.Replace("\", "/")
-$opencodeConfig = $opencodeTemplate.Replace("__AXEL_PORTABLE_ROOT__", $opencodeRoot)
+$profileRootForConfig = $ProfileRoot.Replace("\", "/")
+$opencodeConfig = $opencodeTemplate.Replace("__AXEL_PORTABLE_ROOT__", $opencodeRoot).Replace("__AXEL_PROFILE_ROOT__", $profileRootForConfig)
 $opencodeDestination = Join-Path $ProfileRoot "opencode\opencode.json"
 New-Item -ItemType Directory -Path (Split-Path -Parent $opencodeDestination) -Force | Out-Null
 Set-Content -LiteralPath $opencodeDestination -Value $opencodeConfig -Encoding UTF8 -NoNewline
