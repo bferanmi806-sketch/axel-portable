@@ -25,7 +25,8 @@ human-readable derived maps and are not additional hidden instructions.
 
 - `identity/` contains the recovered Axel prompt and derived identity maps.
 - `memory/` contains human-readable Basic Memory projects and project knowledge.
-- `opencode/` contains local skills, installed global skills, commands and sanitized config templates.
+- `opencode/` contains local skills, installed global skills, the rendered UI critic, commands and sanitized config templates.
+- `DESIGN-TOOLS.md` records the promoted design integrations, Design Studio/Product Design routing and free-reference policy.
 - `tools/integrations/` contains the current CodeMem and Axel Improvement Engine source snapshots plus the disabled local-memory experiment.
 - `runtimes/` contains OpenCode, Paseo and Codex adapter templates.
 - `scripts/` contains inventory, bootstrap, restore and verification helpers.
@@ -58,6 +59,7 @@ projects globally.
 
 ## Provenance
 
-The package was assembled from the Windows installation and the available WSL
-Ubuntu installation on 2026-08-22. See `manifests/FILES.md` for the complete
-inventory and `manifests/VERSIONS.md` for observed versions and source commits.
+The initial package was assembled from the Windows installation and the
+available WSL Ubuntu installation on 2026-08-22. The current-profile sync audit
+was completed on 2026-08-25. See `manifests/FILES.md` for the complete inventory
+and `manifests/VERSIONS.md` for observed versions and source commits.

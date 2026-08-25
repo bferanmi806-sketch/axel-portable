@@ -1,17 +1,19 @@
 # Portable File Manifest
 
-Inventory date: 2026-08-22. Paths are Windows paths unless explicitly marked
-as WSL. The package was assembled by copying source files, not moving or
-deleting the working installation.
+Initial inventory date: 2026-08-22. Current sync audit: 2026-08-25. Paths are
+Windows paths unless explicitly marked as WSL. The package was assembled by
+copying source files, not moving or deleting the working installation.
 
 ## Included source
 
 | Source path | Component | Contents | Treatment |
 |---|---|---|---|
-| `C:\Users\bfera\.config\opencode\AGENTS.md` | Axel/OpenCode | Operating rules and identity behavior | Copied to repository root `AGENTS.md` |
+| `C:\Users\bfera\.config\opencode\AGENTS.md` | Axel/OpenCode | Operating rules, identity behavior and frontend review routing | Copied to repository root `AGENTS.md` |
+| `C:\Users\bfera\.config\opencode\DESIGN-TOOLS.md` | Axel/OpenCode | Promoted design integrations and reference-routing workflow | Sanitized into repository root `DESIGN-TOOLS.md` |
 | `C:\Users\bfera\.paseo\config.json` `daemon.appendSystemPrompt` | Axel/Paseo | Global Axel prompt | Copied as `identity/AXEL.md`; other config values sanitized into a template |
-| `C:\Users\bfera\.config\opencode\skills` | OpenCode | 14 local frontend/design skills | Copied to `opencode/skills/local/` |
-| `C:\Users\bfera\.agents\skills` | Global skills | Installed skills, references, scripts and provenance | Copied to `opencode/skills/global/`, excluding nested Git metadata and generated caches |
+| `C:\Users\bfera\.config\opencode\skills` | OpenCode | 19 local frontend/design skills, including the promoted design stack | Copied to `opencode/skills/local/`, excluding generated caches |
+| `C:\Users\bfera\.agents\skills` | Global skills | 51 installed skills, references, scripts and provenance | Copied to `opencode/skills/global/`, excluding nested Git metadata and generated caches |
+| `C:\Users\bfera\.config\opencode\agents\design-review.md` | OpenCode | Read-only rendered UI critic | Copied to `opencode/agents/design-review.md` |
 | `C:\Users\bfera\.agents\.skill-lock.json` | Global skills | Git source and install provenance | Copied as `opencode/skills/skill-lock.json` |
 | `C:\Users\bfera\.config\opencode\commands\compound.md` | OpenCode | Axel Improvement Engine command | Copied to `opencode/commands/compound.md` |
 | `C:\Users\bfera\.config\opencode\plans\2026-07-31-001-dream-mode-resilient-curation-plan.md` | OpenCode/Dream Mode | Current planning contract | Copied to `opencode/plans/` |
@@ -19,7 +21,7 @@ deleting the working installation.
 | `C:\Users\bfera\.config\opencode\package-lock.json` | OpenCode | Locked plugin dependency graph | Copied to `opencode/config/` |
 | `C:\Users\bfera\Axel-memory\Axel` | Basic Memory | Configured `Axel` human-readable notes | Copied to `memory/basic-memory/axel/` |
 | `C:\Users\bfera\basic-memory` | Basic Memory | Configured `main` human-readable notes | Copied to `memory/basic-memory/main/` |
-| `C:\Users\bfera\Documents\paseo-codex-test\Axel Project Knowledge` | Basic Memory | Configured project contributions and agent lessons | Copied to `memory/basic-memory/axel-project-knowledge/` |
+| `C:\Users\bfera\Documents\paseo-codex-test\Axel Project Knowledge` | Basic Memory | Configured project contributions and agent lessons, including the current OpenMausBot contribution | Copied to `memory/basic-memory/axel-project-knowledge/` |
 | `C:\Users\bfera\Documents\paseo-codex-test\Axel` | Alternate memory worktree | Separate working copy with newer/uncommitted notes | Copied to `memory/axel-worktree/`; review before merging |
 | `C:\Users\bfera\Documents\Axel Workspaces\axel_project` | Axel project knowledge | Active index, architecture, decisions and feature notes | Copied to `memory/axel-project/` |
 | `C:\Users\bfera\Documents\Engineering\codemem` | CodeMem | Current local CodeMem source, MCP server, plugin and local changes | Snapshot copied to `tools/integrations/codemem/` without `.git`, dependencies, generated dist/viewer output or databases; viewer source assets under `packages/ui/static` are retained |
@@ -29,7 +31,7 @@ deleting the working installation.
 | `C:\Users\bfera\Documents\paseo-opencode-runtime\paseo.json` | Paseo development | Portable dev-worktree service definitions | Copied to `runtimes/paseo/paseo.json` |
 | `C:\Users\bfera\.codex\config.toml` | Codex | Model, plugin, MCP and feature settings | Sanitized reusable template in `runtimes/codex/` |
 | `C:\Users\bfera\.codex\rules\default.rules` | Codex | Local command approval rules | Preserved as a workstation-specific snapshot; not auto-applied |
-| `C:\Users\bfera\.codex\skills` | Codex | Installed non-system skills and Codex-specific skill files | Copied to `runtimes/codex/skills/` |
+| `C:\Users\bfera\.codex\skills` | Codex | Installed non-system skills and Codex-specific skill files, including current Paseo help/plugin guidance | Copied to `runtimes/codex/skills/` |
 | `C:\Users\bfera\.codex\automations` | Codex | Paused Dreamer and workspace automation definitions | Copied to `runtimes/codex/automations/` and marked project-dependent |
 | `C:\Users\bfera\.config\yt-dlp\config` | Tool | Node JavaScript runtime setting | Copied as a non-secret tool reference |
 | `C:\Users\bfera\.agent-reach\tools\xiaoyuzhou\transcribe.sh` | Tool | Local transcription helper | Copied under tool integrations if present |
@@ -39,7 +41,7 @@ deleting the working installation.
 | Source path | Reason | Package treatment |
 |---|---|---|
 | `C:\Users\bfera\.config\opencode\opencode.json` | Contains absolute local paths and an environment-backed credential reference | `opencode/config/opencode.json.template` |
-| `C:\Users\bfera\.paseo\config.json` | Contains absolute paths and runtime-specific provider commands | `runtimes/paseo/config.template.json`; prompt separately preserved |
+| `C:\Users\bfera\.paseo\config.json` | Contains absolute paths and runtime-specific provider commands | `runtimes/paseo/config.template.json`; prompt and non-machine-specific default agent profile separately preserved |
 | `C:\Users\bfera\.basic-memory\config.json` | Contains machine paths and generated timestamps | `memory/config.template.json` |
 | `C:\Users\bfera\.codex\config.toml` | Contains machine paths, project trust entries, native-pipe details and device identifiers | `runtimes/codex/config.toml.template` |
 | `.env` and provider configuration | Values are credentials or host-specific state | Names only in `.env.example`, `tools/integrations/last30days.env.example` and `manifests/SECRETS_REQUIRED.md` |
@@ -64,6 +66,7 @@ deleting the working installation.
 | `C:\Users\bfera\.config\last30days\.env` | last30days | Private tool environment file |
 | `C:\Users\bfera\.config\opencode\opencode.json.backup-before-codemem-20260725-180453` | OpenCode | Historical backup contains a populated Composio credential; excluded |
 | `C:\Users\bfera\AppData\Roaming\Paseo-paseo-opencode-runtime` | Paseo desktop | Electron cache, local storage, cookies/session-like state and window state |
+| Recursive `Unpeel`/`unpeel` search under `C:\Users\bfera` | Unpeel | No installation, configuration or reference was discovered during the current audit; macOS compatibility remains unverified |
 | WSL `/home/bfera/everos-axel/.env` | WSL project | Unrelated provider credential-bearing project environment |
 | WSL `/home/bfera/.config/opencode/opencode.jsonc` | WSL OpenCode | Minimal schema-only config; no Axel-specific behavior |
 | `C:\Users\bfera\.mempalace`, `.openmausbot`, `.copilot`, `.cherrystudio` | Other tools | Unrelated/legacy runtime state; no current Axel dependency discovered |

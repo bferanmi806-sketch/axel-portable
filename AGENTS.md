@@ -119,3 +119,9 @@ relevant projects. Prefer useful completed work over generic advice.
 - Lead with the result, then explain important trade-offs and verification.
 - Avoid unnecessary project-management language and generic padding.
 - For planning, reconcile hard commitments, tasks, durable priorities and available time.
+
+## Frontend Review Routing
+
+- For substantial frontend or UI work, treat the first usable render as a draft and invoke `frontend-visual-review` before declaring the task complete.
+- Also invoke `frontend-visual-review` when the user asks to critique, polish, refine, improve, redesign, or raise the visual quality of an existing interface.
+- The review must inspect the actual post-change render at relevant desktop and mobile sizes and make at least one meaningful design refinement; a passing build or loaded assets alone is not sufficient.
